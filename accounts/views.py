@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 
 from accounts.read_serializer import UserProfileReadSerializer
 
-from .serializers import UserRegistrationSerializer, UserProfileUpdateSerializer
+from .serializers import UserRegistrationSerializer, UserProfileUpdateSerializer, UserPasswordUpdateSerializer
 from.models import UserProfile
 
 class UserRegistrationView(APIView):
@@ -38,4 +38,14 @@ class UserProfileUpdateView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+class UpdatePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     
+    def put(self, request):
+        serializer = UserPasswordUpdateSerializer(data = request.data, context = {'request':request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password updated successfully."}, status= status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
