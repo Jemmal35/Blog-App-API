@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 
 from accounts.read_serializer import UserProfileReadSerializer
 
-from .serializers import UserRegistrationSerializer
+from .serializers import UserRegistrationSerializer, UserProfileUpdateSerializer
 from.models import UserProfile
 
 class UserRegistrationView(APIView):
@@ -27,3 +27,15 @@ class UserProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
         
+class UserProfileUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def put(self, request):
+        profile = request.user.profile
+        serializer = UserProfileUpdateSerializer(profile, data = request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
