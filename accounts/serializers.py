@@ -91,4 +91,32 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         
         return instance
     
+
+class UserPasswordUpdateSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only = True)
+    new_password = serializers.CharField(write_only = True)
     
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+    
+    def validate_new_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError("Password must contain at least one uppercase letter.")
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError("Password must contain at least one lowercase letter.")
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError("Password must contain at least one digit.")
+        if not re.search(r'[\W_]', value):
+            raise serializers.ValidationError("Password must contain at least one special character.")
+        return value
+    
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user
