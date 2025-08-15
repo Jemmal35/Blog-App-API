@@ -64,3 +64,31 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             UserProfile.objects.filter(user = user).update(**profile_data)    
         return user
     
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name','last_name', 'email', 'phone_number']
+        extra_kwards = {
+            'email':{'required':True}
+        }
+        
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    user = UserUpdateSerializer()
+    class Meta:
+        model = UserProfile
+        fields = ['user','bio','location', 'birth_date', 'profile_picture']
+        
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+    
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        return instance
+    
+    
