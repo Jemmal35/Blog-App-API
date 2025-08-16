@@ -182,4 +182,18 @@ class CommentApiView(APIView):
             serializer.save(user = request.user, post_id = post_id)
             return Response(serializer.data, status = status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)   
+        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+    
+    
+class LikeApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, post_id):
+        try:
+            post = Post.objects.get(pk = post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found."}, status= status.HTTP_404_NOT_FOUND)
+        like, created = Like.objects.get_or_create(post = post, user = request.user)
+        if not created:
+            like.delete()
+            return Response({"message": "Unliked"}, status= status.HTTP_200_OK)
+        return Response({"message": "Liked"}, status= status.HTTP_201_CREATED)
