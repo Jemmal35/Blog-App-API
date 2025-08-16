@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework import permissions
 
 from blog.models import Post, Category, Tag, Like, Comment
-from blog.read_serializers import PostReadSerializer
-from blog.serializers import PostSerializers, CategorySerializer, TagSerializer
+from blog.read_serializers import CommentReadSerializer, PostReadSerializer
+from blog.serializers import CommentSerializer, PostSerializers, CategorySerializer, TagSerializer
 from config.pagination import CustomPagePagination
 
 
@@ -166,3 +166,20 @@ class PostDetailView(APIView):
 
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class CommentApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, post_id):
+        comments = Comment.objects.filter(post_id = post_id).order_by('created_at')
+        serializer = CommentReadSerializer(comments, many = True)
+        return Response(serializer.data, status= status.HTTP_200_OK)
+    
+    def post(self, request, post_id):
+        serializer = CommentSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save(user = request.user, post_id = post_id)
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)   

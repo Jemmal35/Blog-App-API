@@ -71,11 +71,11 @@ class PostSerializers(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['post','content']
+        fields = ['content', 'created_at']
         
-        def create(self, validated_data):
-            user = self.context['request'].user
-            comment = Comment.objects.create(user = user, **validated_data)
-            return comment
-        
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id','user', 'post', 'created_at']
         

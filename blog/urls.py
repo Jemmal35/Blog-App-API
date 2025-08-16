@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PostListView, PostDetailView, CategoryApiView, CategoryDetailApiView, TagApiView, TagDetailApiView
+from .views import PostListView, PostDetailView, CategoryApiView, CategoryDetailApiView, TagApiView, TagDetailApiView, CommentApiView
 
 
 urlpatterns = [
@@ -8,6 +8,7 @@ urlpatterns = [
     path("api/v1/category/", CategoryApiView.as_view(), name= 'category'),
     path("api/v1/category/<id>/", CategoryDetailApiView.as_view(), name= 'category-detail'),
     path("api/v1/tag/", TagApiView.as_view(), name= 'tag'),
-    path("api/v1/tag/<id>/", TagDetailApiView.as_view(), name= 'tag-detail'),   
+    path("api/v1/tag/<id>/", TagDetailApiView.as_view(), name= 'tag-detail'),
+    path("api/v1/posts/<post_id>/comments/", CommentApiView.as_view(), name = 'post-comments'),
     
 ]
