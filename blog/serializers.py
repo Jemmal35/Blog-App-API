@@ -24,23 +24,48 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 class PostSerializers(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(queryset = Category.objects.all(), required = False, allow_null = True)
-    tag = serializers.PrimaryKeyRelatedField(queryset = Tag.objects.all(), required = False, allow_null = True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source="category",
+        write_only=True
+    )
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        source="tags",
+        many=True,
+        write_only=True
+    )
     
     class Meta:
         model = Post
-        fields = ['title','content','image','status','category','tag']
+        fields = ['title','content','image','status','category_id','tag_ids']
         
     def create(self, validated_data):
+        tags = validated_data.pop("tags", [])
+        category = validated_data.pop("category", None)
         user = self.context['request'].user
-        post = Post.objects.create(author = user, **validated_data)
+        
+        post = Post.objects.create(author=user, category=category, **validated_data)
+        if tags:
+            post.tags.set(tags)
         return post
     
-    def update(self, instance ,validated_data):
-        for atts, value in validated_data.items():
-            setattr(instance, atts, value)
+    def update(self, instance, validated_data):
+        tags = validated_data.pop("tags", None)
+        category = validated_data.pop("category", None)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        if category:
+            instance.category = category
         instance.save()
+        
+        if tags is not None:
+            instance.tags.set(tags)
+        
         return instance
+
     
 
 class CommentSerializer(serializers.ModelSerializer):
