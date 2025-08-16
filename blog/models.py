@@ -39,14 +39,14 @@ class Post(models.Model):
     ]
     
     id = models.BigAutoField(primary_key= True)
-    author = models.ForeignKey(User, on_delete= models.CASCADE, blank= True)
+    author = models.ForeignKey(User, on_delete= models.CASCADE, blank= True, related_name= 'posts')
     title = models.CharField(max_length= 255, blank= True)
     slug = models.CharField(max_length= 255, unique= True, blank= True)
     content = models.TextField()
     image = models.ImageField(upload_to= "Post_Images/", blank= True, null= True)
     status = models.CharField(max_length=15, choices= STATUS_CHOICE, default= 'draft')
-    category = models.OneToOneField(Category, on_delete= models.SET_NULL, blank= True, null= True, related_name= 'categories')
-    tag = models.ForeignKey(Tag, on_delete= models.SET_NULL, null= True, blank= True, related_name= 'tags')
+    category = models.ForeignKey(Category, on_delete= models.SET_NULL, blank= True, null= True, related_name= 'posts')
+    tags = models.ManyToManyField(Tag, blank= True, related_name= 'posts')
     created_at = models.DateTimeField(auto_now_add= True)
     updated_at = models.DateTimeField(auto_now= True)
     
