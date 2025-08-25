@@ -7,8 +7,14 @@ from django.dispatch import receiver
 
 
 class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('manager', 'Manager'),
+        ('user', 'User'),
+    ]
     id = models.BigAutoField(primary_key= True)
     phone_number = models.CharField(max_length= 15, null= True, blank= True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     
     def __str__(self):
         return self.username
