@@ -68,7 +68,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name','last_name', 'email', 'phone_number']
+        fields = ['first_name','last_name', 'email', 'role', 'phone_number']
         extra_kwards = {
             'email':{'required':True}
         }
