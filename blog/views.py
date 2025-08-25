@@ -7,10 +7,10 @@ from blog.models import Post, Category, Tag, Like, Comment
 from blog.read_serializers import CommentReadSerializer, PostReadSerializer
 from blog.serializers import CommentSerializer, PostSerializers, CategorySerializer, TagSerializer
 from config.pagination import CustomPagePagination
-
+from config.permissions import IsAdminOrManager, IsAuthorOrAdmin
 
 class CategoryApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager]
     
     def get(self, request):
         category = Category.objects.all().order_by('name')
@@ -26,7 +26,7 @@ class CategoryApiView(APIView):
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
     
 class CategoryDetailApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager]
     
     def get_object(self, id):
         try:
@@ -60,7 +60,7 @@ class CategoryDetailApiView(APIView):
 
 
 class TagApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager]
     
     def get(self, request):
         tag = Tag.objects.all().order_by('name')
@@ -77,7 +77,7 @@ class TagApiView(APIView):
 
     
 class TagDetailApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrManager ]
        
     def get_object(self, id):
         try:
@@ -130,7 +130,7 @@ class PostListView(APIView):
     
 
 class PostDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrAdmin]
     def get_object(self,id):
         try:
             post = Post.objects.get(pk = id)
@@ -169,7 +169,7 @@ class PostDetailView(APIView):
     
     
 class CommentApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrAdmin]
     
     def get(self, request, post_id):
         comments = Comment.objects.filter(post_id = post_id).order_by('created_at')
@@ -186,7 +186,7 @@ class CommentApiView(APIView):
     
     
 class LikeApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrAdmin]
     def post(self, request, post_id):
         try:
             post = Post.objects.get(pk = post_id)
