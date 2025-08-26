@@ -21,12 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cy-7$reqiy73pe*i@0uyy-#ctd&rvlbr=1n*hcv6t=a*e!+m+!'
+# SECRET_KEY = 'django-insecure-cy-7$reqiy73pe*i@0uyy-#ctd&rvlbr=1n*hcv6t=a*e!+m+!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+import os
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+DEBUG = int(os.getenv('DEBUG', default=0))
+ALLOWED_HOSTS = ['*'] 
 
 AUTH_USER_MODEL = "accounts.User"
 # Application definition
@@ -82,10 +87,33 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'blog_db',       # your database name
+#         'USER': 'postgres',      # default postgres user (change if different)
+#         'PASSWORD': 'root',  # the password you set during PostgreSQL installation
+#         'HOST': 'localhost',     # since it's running locally
+#         'PORT': '5432',          # default PostgreSQL port
+#     }
+# }
+
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DJANGO_DB_NAME'),
+        'USER': os.getenv('DJANGO_DB_USER'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+        'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.getenv('DJANGO_DB_PORT', 5432),
     }
 }
 
