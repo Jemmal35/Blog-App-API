@@ -58,10 +58,10 @@ A full-featured Blog API built with **Django REST Framework**, using **JWT authe
     - The API will be accessible at: http://localhost:8000/
 
 ## Apply Migrations
-    docker-compose exec web python manage.py migrate
+    docker-compose exec blog python manage.py migrate
 
 ## Create Superuser
-    docker-compose exec web python manage.py createsuperuser
+    docker-compose exec blog python manage.py createsuperuser
 
 ## API Endpoints
 ### Accounts
